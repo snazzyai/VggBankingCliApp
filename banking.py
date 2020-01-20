@@ -7,18 +7,22 @@ def showAccounts():
 
 
 def startAccount():
+    print('MAIN MENU')
     accountOptions = input(
         'Press 1: Create account \n Press 2: Transaction \n press 3: Show Accounts \n press 4: To exit app \n: ')
     if (accountOptions == "1"):
         createAccount()
     elif (accountOptions == "2"):
+        print('TRANSACTION MENU')
         transaction = input(
-            'press 1: Check Balance \n press 2: Withdraw \n press 3: Transfer \n')
+            'press 1: Check Balance \n press 2: Withdraw \n press 3: Deposit \n press 4: Transfer  \n press any key to go to main menu \n:')
         if(transaction == '1'):
             checkBalance()
         elif(transaction == '2'):
             withdrawMoney()
         elif(transaction == '3'):
+            depositMoney()
+        elif(transaction == '4'):
             transferMoney()
         else:
             startAccount()
@@ -33,12 +37,13 @@ def startAccount():
 
 
 def withdrawMoney():
+    print('WITHDRAW')
     user = input('enter email associated with your account: ')
     if(userExists(user)):
         withdrawal = input('please enter an amount to withdraw: ')
         if(int(withdrawal) > int(userDetails(user)[2])):
-            print('your account is too low for withdrawal!!')
-            startAccount()
+            print('your account is too low for withdrawal!!,')
+            depositMoney()
         else:
             amountToWithdraw = int(withdrawal)
             totalAmountLeft = int(userDetails(user)[2]) - amountToWithdraw
@@ -46,6 +51,8 @@ def withdrawMoney():
                 print('you have withdrawn ' + 'N' + str(withdrawal) +
                       '. You have N' + str(totalAmountLeft)+' left')
             startAccount()
+    else:
+        createAccount()
 
 
 def setNewAmount(amount, user):
@@ -75,16 +82,33 @@ def userDetails(user):
 
 
 def transferMoney():
+    print('TRANSFER')
     user = input('enter email associated with your account: ')
     if(userExists(user)):
         transfer = input('please enter an amount to transfer: ')
-        if(int(transfer) > userDetails(user)[2]):
+        if(userDetails(user)[2] >= int(transfer)):
             if(setNewAmount(transfer, user)):
-                print('Transfer successful!!')
+                print('Transfer of N' + transfer + ' successful!')
                 startAccount()
         else:
-            print('You cannot transfer this amount!!')
+            print('You cannot transfer this amount!!, try depositing and transfer again!')
+            depositMoney()
+
+
+def depositMoney():
+    print('DEPOSIT')
+    user = input('enter email associated with your account: ')
+    if(userExists(user)):
+        deposit = input('please enter an amount to deposit: ')
+        if(int(deposit) > userDetails(user)[2]):
+            if(setNewAmount(deposit, user)):
+                print('Deposit successful!!')
+                startAccount()
+        else:
+            print('You cannot deposit this amount!!')
             startAccount()
+    else:
+        createAccount()
 
 
 def checkBalance():
@@ -92,20 +116,26 @@ def checkBalance():
     if(userExists(user)):
         print("You have a total of" + " N" + str(userDetails(user)[2]) + '\n')
         startAccount()
+    else:
+        createAccount()
 
 
 def validateAccount(email, password):
+    if(email == "" or password == ""):
+        print('email and password cannot be empty!!')
+        createAccount()
     for i in userAccounts:
         if i['email'] == email:
             print('email already exists...')
-            startAccount()
+            createAccount()
         elif i['password'] == password:
             print('password already exists...')
-            startAccount()
+            createAccount()
     return True
 
 
 def createAccount():
+    print('NEW ACCOUNT')
     global userAccounts
     email = input('please enter a unique email: ')
     password = input('please enter a password: ')
